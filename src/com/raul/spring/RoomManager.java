@@ -3,6 +3,7 @@ package com.raul.spring;
 
 import com.raul.spring.models.Room;
 import com.raul.spring.models.User;
+import com.raul.spring.models.UserCard;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +19,7 @@ public class RoomManager {
 
     public static Vector<Room> rooms = new Vector<>();
 
+
     @RequestMapping(value = {"/game"})
     public ModelAndView newRoom(@RequestParam(value = "roomName") String roomName){
 
@@ -26,7 +28,7 @@ public class RoomManager {
             mavtemp.addObject("message","Room ya existe");
             return mavtemp;
         }else {
-            rooms.add(new Room(roomName, 0));
+            rooms.add(new Room(roomName));
             ModelAndView mavtemp = new ModelAndView("Lobby");
             return mavtemp;
         }
@@ -34,26 +36,25 @@ public class RoomManager {
 
     @RequestMapping(value = {"/joinRoom"})
     public ModelAndView joinRoom(HttpSession session, @RequestParam(value = "roomID") String roomName){
-        System.out.println("JOIN ROOM: "+roomName);
+        //System.out.println("JOIN ROOM: "+roomName);
         User user = (User)session.getAttribute("user");
         //System.out.println("ROW: " + row);
         if(user.getRoomID() == ""){
             Room tempRoom = getRoomByID(roomName);
+            tempRoom.addNewPlayer(user.getUserID());
             ModelAndView mav = new ModelAndView("Game");
             session.setAttribute("room", tempRoom);
             user.setRoomID(roomName);
-            System.out.println(user);
-            updateRoom(roomName);
             return mav;
         }else{
-            System.out.println("Usuario ya esta en una room");
+            //System.out.println("Usuario ya esta en una room");
             ModelAndView mavtemp = new ModelAndView("generalView");
             mavtemp.addObject("message","Usuario ya en una Room");
             return mavtemp;
         }
     }
 
-    private static Room getRoomByID(String roomName) {
+    public static Room getRoomByID(String roomName) {
         for (Room room : rooms){
             if(roomName.equals(room.getRoomID())){
                 return room;
@@ -84,11 +85,16 @@ public class RoomManager {
         }
         return false;
     }
+
+    /*
     public static void updateRoom(String roomID){
         for (Room room : rooms){
             if(roomID.equals(room.getRoomID())){
-                room.setNumberOfPlayers(room.getNumberOfPlayers() + 1);
+                room.newPlayer();
+                //room.setNumberOfPlayers(room.getNumberOfPlayers() + 1);
             }
         }
     }
+    */
+
 }

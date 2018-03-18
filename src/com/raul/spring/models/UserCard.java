@@ -3,14 +3,18 @@ package com.raul.spring.models;
 import java.util.Vector;
 
 public class UserCard {
+
+    public static String ON_TURN = "ON TURN";
+    public static String WAITING = "WAITING";
+
     private String playerID;
     private Vector<Integer> cards;
     private String status;
 
-    public UserCard(String playerID, Vector cards, String status) {
+    public UserCard(String playerID, Vector cards) {
         this.playerID = playerID;
         this.cards = cards;
-        this.status = status;
+        this.status = WAITING;
     }
 
     public String getPlayerID() {
@@ -35,5 +39,26 @@ public class UserCard {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String toJSON(){
+        return "{" +
+                "\"playerID\":\"" + playerID +"\"," +
+                "\"status\":\"" + status +"\"," +
+                "\"cards\":" + "[" + cardsToJSON() +"]}";
+
+    }
+
+    private String cardsToJSON(){
+        String json ="";
+
+        for (int i=0; i < cards.size(); i++){
+            json += "{ \"cardKey\" :" + cards.get(i) + "}";
+            if (i!=cards.size()-1){
+                json+=",";
+            }
+        }
+
+        return json;
     }
 }

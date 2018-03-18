@@ -2,6 +2,7 @@ package com.raul.spring;
 
 import com.raul.spring.models.Room;
 import com.raul.spring.models.User;
+import com.raul.spring.models.UserCard;
 import com.sun.deploy.net.HttpResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpSession;
 import java.util.Vector;
+
+import static com.raul.spring.GameManager.findUserCardByPlayerID;
 
 @Controller
 public class UserManager {
@@ -53,7 +56,7 @@ public class UserManager {
     public ModelAndView signOut(HttpSession session){
         User tempUser = (User)session.getAttribute("user");
         users.remove(tempUser);
-        System.out.println(users.toString());
+       // System.out.println(users.toString());
         ModelAndView mav = new ModelAndView("Home");
         return mav;
     }
@@ -63,8 +66,11 @@ public class UserManager {
         User tempUser = (User)session.getAttribute("user");
         users.remove(tempUser);
         Room room = (Room)session.getAttribute("room");
-        System.out.println("Exit game: "+room.toString());
+       // System.out.println("Exit game: "+room.toString());
         room.setNumberOfPlayers(room.getNumberOfPlayers()-1);
+        System.out.println(users);
+        UserCard usercard = findUserCardByPlayerID(tempUser.getUserID(), room.getRoomID());
+        room.getUserCards().remove(usercard);
         ModelAndView mav = new ModelAndView("Home");
         return mav;
     }
